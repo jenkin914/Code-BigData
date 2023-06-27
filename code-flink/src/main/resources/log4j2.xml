@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<!--Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，你会看到log4j2内部各种详细输出-->
+<!--monitorInterval：Log4j能够自动检测修改配置 文件和重新配置本身，设置间隔秒数-->
+<configuration status="WARN" monitorInterval="30">
+    <!--
+        集中配置属性进行管理
+        使用时通过：${name}
+    -->
+    <properties>
+        <property name="PROJECT_NAME">code-flink</property>
+        <property name="LOG_PATH">E:\BigData\code-study\code-flink\flink-log</property>
+    </properties>
+
+    <!--日志处理器：先定义所有的appender-->
+    <appenders>
+        <!--这个输出控制台的配置-->
+        <console name="Console" target="SYSTEM_OUT">
+            <!--输出日志的格式-->
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+        </console>
+        <!--文件会打印出所有信息，这个log每次运行程序会自动清空，
+            由append属性决定，这个也挺有用的，适合临时测试用  append="true" -->
+        <File name="FlinkLogFile" fileName="${LOG_PATH}/${PROJECT_NAME}.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
+        </File>
+        <!-- 这个会打印出所有的info及以下级别的信息，每次大小超过size，
+            ${sys:user.home}/logs/info.log ==>C:\Users\用户名\logs
+            则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档-->
+        <RollingFile name="RollingFileInfo" fileName="${LOG_PATH}/logs/${PROJECT_NAME}_info.log"
+                     filePattern="${LOG_PATH}/logs/$${date:yyyy-MM}/${PROJECT_NAME}_info-%d{yyyy-MM-dd}-%i.log">
+            <!--日志级别过滤器，控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <!--日志消息格式-->
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <!--触发规则-->
+            <Policies>
+                <!--在系统启动时，触发拆分规则，生成一个新的日志文件-->
+                <OnStartupTriggeringPolicy/>
+                <!--按照时间节点进行拆分 规则根据filePattern定义的-->
+                <TimeBasedTriggeringPolicy/>
+                <!--按照文件大小进行拆分-->
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="RollingFileDebug" fileName="${LOG_PATH}/logs/${PROJECT_NAME}_debug.log"
+                     filePattern="${LOG_PATH}/logs/$${date:yyyy-MM}/${PROJECT_NAME}_debug-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="RollingFileWarn" fileName="${LOG_PATH}/logs/${PROJECT_NAME}_warn.log"
+                     filePattern="${LOG_PATH}/logs/$${date:yyyy-MM}/${PROJECT_NAME}_warn-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <RollingFile name="RollingFileError" fileName="${LOG_PATH}/logs/${PROJECT_NAME}_error.log"
+                     filePattern="${LOG_PATH}/logs/$${date:yyyy-MM}/${PROJECT_NAME}_error-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+        </RollingFile>
+        <!--定义日志为异步记录-->
+        <Async name="async" includeLocation="true">
+            <AppenderRef ref="FlinkLogFile"/>
+        </Async>
+    </appenders>
+    <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
+    <loggers>
+        <logger name="org.apache.flink" level="error"/>
+        <logger name="org.elasticsearch.client.RestClient logResponse" level="error"/>
+        <logger name="org.apache.kafka" level="error"/>
+        <!--    可以配置日志等级  默认info  -->
+        <root level="info" includeLocation="true" additivity="false">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="FlinkLogFile"/>
+            <appender-ref ref="RollingFileInfo"/>
+            <appender-ref ref="RollingFileDebug"/>
+            <appender-ref ref="RollingFileWarn"/>
+            <appender-ref ref="RollingFileError"/>
+            <!--使用异步appender 下边这个打印了两次-->
+            <!--<appender-ref ref="async"/>-->
+        </root>
+    </loggers>
+</configuration>
