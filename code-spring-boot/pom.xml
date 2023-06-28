@@ -11,6 +11,12 @@
 
     <artifactId>code-spring-boot</artifactId>
 
+    <properties>
+        <start-class>com.jenkin.boot.MainApplication</start-class>
+    </properties>
+    <!--  指定打包成jar  -->
+    <packaging>jar</packaging>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -26,52 +32,20 @@
 
     <build>
         <plugins>
-            <!-- 编译 -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.0</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.7.10</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
-                    <!--                    <excludes>-->
-                    <!--                        <exclude>com/wangan/event/test/**</exclude>-->
-                    <!--                    </excludes>-->
+                    <!-- true:会将项目依赖的jar添加到打包的lib目录 false:是一个不包含依赖jar的包 -->
+                    <fork>true</fork>
+                    <mainClass>com.jenkin.boot.MainApplication</mainClass>
                 </configuration>
-            </plugin>
-            <!-- 打包 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>repackage</goal>
                         </goals>
-                        <configuration>
-                            <!-- <minimizeJar>true</minimizeJar> -->
-                            <shadedArtifactAttached>true</shadedArtifactAttached>
-                            <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.jenkin.boot.MainApplication</mainClass>
-                                </transformer>
-                            </transformers>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
