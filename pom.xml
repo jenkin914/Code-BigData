@@ -11,6 +11,7 @@
     <modules>
         <module>code-flink</module>
         <module>code-spring-boot</module>
+        <module>code-spark</module>
     </modules>
 
     <parent>
