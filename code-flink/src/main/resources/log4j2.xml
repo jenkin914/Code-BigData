@@ -8,8 +8,8 @@
         使用时通过：${name}
     -->
     <properties>
-        <property name="PROJECT_NAME">code-flink</property>
-        <property name="LOG_PATH">E:\BigData\code-study\code-flink\flink-log</property>
+        <property name="PROJECT_NAME">code-flink-sql</property>
+        <property name="LOG_PATH">E:\BigData\Code-BigData\log\code-flink</property>
     </properties>
 
     <!--日志处理器：先定义所有的appender-->

@@ -12,6 +12,7 @@
         <module>code-flink</module>
         <module>code-spring-boot</module>
         <module>code-spark</module>
+        <module>code-flink-sql</module>
     </modules>
 
     <parent>
@@ -34,6 +35,13 @@
     </properties>
 
     <dependencies>
+        <!--  java 连接 mysql 依赖   -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql-connector-java.version}</version>
+        </dependency>
+
         <!--  tool包  -->
         <dependency>
             <groupId>cn.hutool</groupId>
